@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang= "pl" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" th:href="@{/styles/main.css}">
+    <title>Projekt zaliczeniowy</title>
+</head>
+<body>
+<div th:fragment="navigationPanel" class="nav-container">
+    <ul class="nav">
+        <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/register}">Rejestracja</a></li>
+        <li sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}">Zaloguj się</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/users}">Wyświetl użytkowników</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/edit}">Edytuj swoje dane</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/addnote}">Dodaj notatkę</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/notes?my=true}">Wyświetl swoje notatki</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/notes?my=false}">Wyświetl publiczne notatki</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/logout}">Wyloguj się</a></li>
+        <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/delete}" style="color: red;">Usuń swoje konto</a></li>
+    </ul>
+</div>
+<div th:fragment="footer" class="footer">
+    <footer class="footer">
+        Konrad Miziński - projekt zaliczeniowy
+    </footer>
+</div>
+</body>
+</html>

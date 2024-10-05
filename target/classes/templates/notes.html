@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Lista notatek</title>
+  <link rel="stylesheet" th:href="@{/styles/main.css}">
+</head>
+<body>
+
+<div th:include="layout :: navigationPanel" class="nav-container"></div>
+
+<div class="note-container" th:if="${!#lists.isEmpty(notesList)}">
+  <div class="note" th:each="note:${notesList}">
+    <div class="note-buttons-container" th:if="${my == true}">
+      <a th:href="@{'/editnote/' + ${note.id}}" class="edit-button">Edytuj</a>
+      <a th:href="@{'/deletenote/' + ${note.id}}" class="delete-button">Usuń</a>
+    </div>
+    <h2 th:text="${note.title}"></h2>
+    <p th:text="${note.text}"></p>
+    <p class="author" th:if="${my == true && note.isPublic == true}">Notatka jest publiczna</p>
+    <p class="author" th:if="${my == false}" th:text="${note.user.name + ' ' + note.user.surname}"></p>
+  </div>
+</div>
+
+<div th:include="layout :: footer"></div>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Lista użytkowników</title>
+    <link rel="stylesheet" th:href="@{/styles/main.css}">
+</head>
+<body>
+
+<div th:include="layout :: navigationPanel" class="nav-container"></div>
+
+<div class="users-container">
+    <h1>Zarejestrowani użytkownicy</h1>
+    <table th:if="${!#lists.isEmpty(usersList)}" class="user-table">
+        <thead>
+            <tr>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Login</th>
+                <th>Liczba notatek</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user, iteration : ${usersList}">
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.surname}"></td>
+                <td th:text="${user.login}"></td>
+                <td th:text="${numberOfNotes[iteration.index]}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div th:include="layout :: footer"></div>
+
+</body>
+</html>
