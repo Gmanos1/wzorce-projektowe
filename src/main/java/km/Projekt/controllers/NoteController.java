@@ -5,7 +5,7 @@ import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
 import km.Projekt.entity.Note;
 import km.Projekt.entity.User;
-import km.Projekt.logging.Logger;
+import km.Projekt.logging.*;
 import km.Projekt.validation.RegistrationValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +24,7 @@ public class NoteController {
     private NoteDao noteDao;
     @Autowired
     private UserDao userDao;
-    private Logger logger = Logger.getInstance();
+    ShowMessage messages = new ShowMessage();
     @GetMapping("/notes")
     public String getNote(@RequestParam(required = false) Boolean my, Model model, Principal principal) {
         List<Note> foundNotes;
@@ -34,15 +34,24 @@ public class NoteController {
         model.addAttribute("my", my);
         model.addAttribute("notesList", foundNotes);
 
-        logger.log("Wyswietlam notatki");
+        //L1 - COMPOSITE - wywołanie klasy, stworzenie listy wiadomosci od wyswietlenia
+        if (foundNotes == null) {
+            messages.loadMessages(
+                    new ErrorLogger("error", true)
+            );
+        } else {
+            messages.loadMessages(
+                    new MessageLogger("wyświetl notatki", false)
+            );
+        }
+
         return "notes";
     }
-
     @GetMapping("/addnote")
     public String addNote(Model model) {
         model.addAttribute("note", new Note());
 
-        logger.log("Wyświetlam formularz do dodawania notatki");
+
         return "addnote";
     }
 
@@ -54,7 +63,6 @@ public class NoteController {
         note.setUser(userDao.findByLogin(principal.getName()));
         noteDao.save(note);
 
-        logger.log("Dodaje notatkę");
         return "redirect:/notes";
     }
 
@@ -65,7 +73,6 @@ public class NoteController {
         Note foundNote = noteToBeFound.get();
         model.addAttribute("note", foundNote);
 
-        logger.log("Wyświetlam formularz do edytowania notatki");
         return "editnote";
     }
 
@@ -78,7 +85,6 @@ public class NoteController {
         note.setId(id);
         noteDao.save(note);
 
-        logger.log("Edytuję notatkę");
         return "redirect:/notes";
     }
 
@@ -91,7 +97,6 @@ public class NoteController {
                 userDao.findByLogin(principal.getName())) { return "notes"; }
         noteDao.deleteById(id);
 
-        logger.log("Usuwam notatkę");
         return "redirect:/notes";
     }
 }
