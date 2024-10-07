@@ -2,20 +2,31 @@ package km.Projekt.logging;
 
 
 // Logger do logów
-public class Logger {
+// L1 - COMPOSITE - klasa, nie zawiera pod-obiektów
+public class Logger implements LoggerCompositeInterface {
+    public String loggerMessage;
+    public boolean loggerError;
 
-    private static Logger instance;
-
-    private Logger() {}
-
-    public static synchronized Logger getInstance() {
-        if (instance == null) {
-            instance = new Logger();
-        }
-        return instance;
+    Logger(String message, boolean error) {
+        this.loggerMessage = message;
+        this.loggerError = error;
     }
 
-    public void log(String message) {
-        System.out.println("Log: " + message);
+    @Override
+    public void logMessage(String message) {
+        if (this.loggerError) {
+            loggerMessage = "";
+        }
+    }
+
+    @Override
+    public boolean isError() {
+        return false;
+    }
+
+    @Override
+    public String textPosition(String position) {
+        return  "new position " + position;
     }
 }
+
