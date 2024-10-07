@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import km.Projekt.logging.Logger;
 
 @Getter
 @Setter
@@ -29,7 +28,6 @@ public class Note implements Entity {
 
     @Override
     public void displayInfo() {
-        Logger logger = Logger.getInstance();
-        logger.log("Jestem notatka o id " + id.toString() + ", o tytule " + title);
+        System.out.println("Jestem notatka o id " + id.toString() + ", o tytule " + title);
     }
 }

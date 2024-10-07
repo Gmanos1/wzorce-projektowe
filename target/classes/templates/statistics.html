@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Statystyki aktualnej sesji</title>
+  <link rel="stylesheet" th:href="@{/styles/main.css}">
+</head>
+<body>
+
+<div th:include="layout :: navigationPanel" class="nav-container"></div>
+
+<div class="note-container">
+  <div class="note">
+    <h2 th:text="'Liczba logowań = ' + ${statistics.getNumberOfLogins()}"></h2>
+  </div>
+  <div class="note">
+    <h2 th:text="'Liczba wyświetleń profilu użytkownika = ' + ${statistics.getNumberOfProfileViews()}"></h2>
+  </div>
+  <div class="note">
+    <h2 th:text="'Liczba wyświetlonych notatek = ' + ${statistics.getNumberOfViewedNotes()}"></h2>
+  </div>
+  <div class="note">
+    <h2 th:text="'Liczba dodanych notatek = ' + ${statistics.getNumberOfAddedNotes()}"></h2>
+    </div>
+  <div class="note">
+    <h2 th:text="'Liczba usuniętych = ' + ${statistics.getNumberOfDeletedNotes()}"></h2>
+  </div>
+</div>
+
+<div th:include="layout :: footer"></div>
+
+</body>
+</html>

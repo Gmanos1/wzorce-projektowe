@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
 import km.Projekt.entity.Note;
+import km.Projekt.entity.SessionStatistics;
 import km.Projekt.entity.User;
 import km.Projekt.logging.*;
 import km.Projekt.validation.RegistrationValidation;
@@ -25,8 +26,11 @@ public class NoteController {
     @Autowired
     private UserDao userDao;
     ShowMessage messages = new ShowMessage();
+    SessionStatistics sessionStatistics = SessionStatistics.getInstance();
     @GetMapping("/notes")
     public String getNote(@RequestParam(required = false) Boolean my, Model model, Principal principal) {
+        sessionStatistics.incrementNumberOfViewedNotes();
+
         List<Note> foundNotes;
         if (my == null) my = true;
         if (my) foundNotes = noteDao.findAllByUser(userDao.findByLogin(principal.getName()));
@@ -50,13 +54,13 @@ public class NoteController {
     @GetMapping("/addnote")
     public String addNote(Model model) {
         model.addAttribute("note", new Note());
-
-
         return "addnote";
     }
 
     @PostMapping("/addnote")
     public String addNotePOST(@ModelAttribute @Valid Note note, BindingResult bindingResult, Principal principal){
+        sessionStatistics.incrementNumberOfAddedNotes();
+
         if (bindingResult.hasErrors()) {
             return "addnote";
         }
@@ -97,6 +101,7 @@ public class NoteController {
                 userDao.findByLogin(principal.getName())) { return "notes"; }
         noteDao.deleteById(id);
 
+        sessionStatistics.incrementNumberOfDeletesNotes();
         return "redirect:/notes";
     }
 }

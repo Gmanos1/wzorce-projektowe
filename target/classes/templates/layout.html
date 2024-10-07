@@ -24,6 +24,8 @@
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/notes?my=false}">Wyświetl publiczne notatki</a></li>
         <li sec:authorize="isAuthenticated()">
+            <a th:href="@{/statistics}">Wyświetl statystyki sesji</a></li>
+        <li sec:authorize="isAuthenticated()">
             <a th:href="@{/logout}">Wyloguj się</a></li>
         <li sec:authorize="isAuthenticated()">
             <a th:href="@{/delete}" style="color: red;">Usuń swoje konto</a></li>

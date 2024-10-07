@@ -37,7 +37,6 @@ public class User implements Entity {
     public List<Note> notes;
 
     public void displayInfo() {
-        Logger logger = Logger.getInstance();
-        logger.log("Jestem uzytkownikiem o id " + userid.toString() + ", i nazwie " + name);
+        System.out.println("Jestem uzytkownikiem o id " + userid.toString() + ", i nazwie " + name);
     }
 }

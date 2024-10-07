@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
 import km.Projekt.entity.Entity;
+import km.Projekt.entity.SessionStatistics;
 import km.Projekt.entity.User;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import km.Projekt.entity.UserFactory;
 import km.Projekt.validation.EditingValidation;
 import km.Projekt.validation.PasswordValidation;
 import km.Projekt.validation.RegistrationValidation;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -32,8 +34,10 @@ public class UserController {
     private UserDao userDao;
     @Autowired
     private NoteDao noteDao;
+    SessionStatistics sessionStatistics = SessionStatistics.getInstance();
     @GetMapping("/login")
     public String loginPage() {
+        sessionStatistics.incrementNumberOfLogins();
         return "login";
     }
     @GetMapping("/register")
@@ -66,6 +70,7 @@ public class UserController {
     @GetMapping("/profile")
     public String profilePage(Model model, Principal principal) {
         model.addAttribute("user", userDao.findByLogin(principal.getName()));
+        sessionStatistics.incrementNumberOfProfileViews();
         return "profile";
     }
     @GetMapping("/users")
