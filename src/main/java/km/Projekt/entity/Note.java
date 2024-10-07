@@ -6,23 +6,30 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import km.Projekt.logging.Logger;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@jakarta.persistence.Entity
 @Table(name = "Notes")
-public class Note {
+public class Note implements Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    public Long id;
     @NotEmpty(message = "Tytuł nie może być pusty")
-    private String title;
+    public String title;
     @NotEmpty(message = "Zawartość nie może być pusta")
-    private String text;
-    private Boolean isPublic = false;
+    public String text;
+    public Boolean isPublic = false;
 
     @ManyToOne
-    private User user;
+    public User user;
+
+    @Override
+    public void displayInfo() {
+        Logger logger = Logger.getInstance();
+        logger.log("Jestem notatka o id " + id.toString() + ", o tytule " + title);
+    }
 }

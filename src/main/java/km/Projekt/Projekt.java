@@ -1,5 +1,7 @@
 package km.Projekt;
 
+import km.Projekt.entity.User;
+import km.Projekt.entity.UserFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

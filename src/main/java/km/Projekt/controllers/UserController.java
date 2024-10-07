@@ -1,15 +1,15 @@
 package km.Projekt.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.constraints.Pattern;
 import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
+import km.Projekt.entity.Entity;
 import km.Projekt.entity.User;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import km.Projekt.entity.UserFactory;
 import km.Projekt.validation.EditingValidation;
 import km.Projekt.validation.PasswordValidation;
 import km.Projekt.validation.RegistrationValidation;
@@ -23,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserController {
@@ -47,13 +46,15 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "register";
         }
+
+
         if (userDao.findByLogin(user.getLogin()) != null){
             bindingResult.rejectValue("login",
                     "error.user",
                     "Taki użytkownik już istnieje");
             return "register";
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));;
         userDao.save(user);
         return "redirect:/login";
     }
