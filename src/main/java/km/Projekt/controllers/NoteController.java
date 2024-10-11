@@ -8,6 +8,8 @@ import km.Projekt.entity.NoteManagerFacade;
 import km.Projekt.entity.SessionStatistics;
 import km.Projekt.entity.User;
 import km.Projekt.logging.*;
+import km.Projekt.notesView.NoteStyle;
+import km.Projekt.notesView.NoteStyleFactory;
 import km.Projekt.validation.RegistrationValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -72,6 +74,18 @@ public class NoteController {
 
         String[] tags = {"newNote"};
         noteManagerFacade.addNoteWithFeatures(note, principal, tags); //dodanie notatki z tagami, powiadomieniem i kopią zapasowa
+
+        NoteStyle newNote = NoteStyleFactory.getNoteStyle("Emergency", true); //tworzenie obiektów notatek FLYWEIGHT
+        NoteStyle newNote2 = NoteStyleFactory.getNoteStyle("Standard", false);
+        NoteStyle newNote3 = NoteStyleFactory.getNoteStyle("Emergency", true); //współdzielenie stylu z note1
+
+        Note note1 = new Note(newNote);
+        Note note2 = new Note(newNote2);
+        Note note3 = new Note(newNote3);
+
+        note1.displayNote();
+        note2.displayNote();
+        note3.displayNote(); //wyświetlenie styli wraz z notatkami // FLYWEIGHT
 
         return "redirect:/notes";
     }
