@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,6 +24,9 @@ public class Note implements Entity {
     @NotEmpty(message = "Zawartość nie może być pusta")
     public String text;
     public Boolean isPublic = false;
+    public String content;
+    @ElementCollection
+    public List<String> tags; //lista tagów dla notatki
 
     @ManyToOne
     public User user;

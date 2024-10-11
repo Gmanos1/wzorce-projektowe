@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
 import km.Projekt.entity.Note;
+import km.Projekt.entity.NoteManagerFacade;
 import km.Projekt.entity.SessionStatistics;
 import km.Projekt.entity.User;
 import km.Projekt.logging.*;
@@ -66,6 +67,11 @@ public class NoteController {
         }
         note.setUser(userDao.findByLogin(principal.getName()));
         noteDao.save(note);
+
+        NoteManagerFacade noteManagerFacade = new NoteManagerFacade(); //tworzenie fasady
+
+        String[] tags = {"newNote"};
+        noteManagerFacade.addNoteWithFeatures(note, principal, tags); //dodanie notatki z tagami, powiadomieniem i kopią zapasowa
 
         return "redirect:/notes";
     }
