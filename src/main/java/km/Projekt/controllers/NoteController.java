@@ -5,17 +5,14 @@ import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
 import km.Projekt.entity.Note;
 import km.Projekt.entity.NoteManagerFacade;
-import km.Projekt.entity.SessionStatistics;
-import km.Projekt.entity.User;
+import km.Projekt.entity.statistics.SessionStatistics;
 import km.Projekt.logging.*;
 import km.Projekt.notesView.NoteStyle;
 import km.Projekt.notesView.NoteStyleFactory;
-import km.Projekt.validation.RegistrationValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;

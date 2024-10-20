@@ -12,19 +12,19 @@
 
 <div class="note-container">
   <div class="note">
-    <h2 th:text="'Liczba wyświetleń strony logowania = ' + ${statistics.getNumberOfLogins()}"></h2>
+    <h2 th:style="'color: ' + ${statistics.getNumberOfLogins().color}" th:text="'Liczba wyświetleń strony logowania = ' + ${statistics.getNumberOfLogins().statValue}"></h2>
   </div>
   <div class="note">
-    <h2 th:text="'Liczba wyświetleń profilu użytkownika = ' + ${statistics.getNumberOfProfileViews()}"></h2>
+    <h2 th:style="'color: ' + ${statistics.getNumberOfProfileViews().color}" th:text="'Liczba wyświetleń profilu użytkownika = ' + ${statistics.getNumberOfProfileViews().statValue}"></h2>
   </div>
   <div class="note">
-    <h2 th:text="'Liczba wyświetlonych notatek = ' + ${statistics.getNumberOfViewedNotes()}"></h2>
+    <h2 th:style="'font-weight: ' + ${statistics.getNumberOfViewedNotes().isBold}" th:text="'Liczba wyświetlonych notatek = ' + ${statistics.getNumberOfViewedNotes().statValue}"></h2>
   </div>
   <div class="note">
-    <h2 th:text="'Liczba dodanych notatek = ' + ${statistics.getNumberOfAddedNotes()}"></h2>
+    <h2 th:style="'color: ' + ${statistics.getNumberOfAddedNotes().color}" th:text="'Liczba dodanych notatek = ' + ${statistics.getNumberOfAddedNotes().statValue}"></h2>
     </div>
   <div class="note">
-    <h2 th:text="'Liczba usuniętych = ' + ${statistics.getNumberOfDeletedNotes()}"></h2>
+    <h2 th:style="'color: ' + ${statistics.getNumberOfDeletedNotes().color}" th:text="'Liczba usuniętych = ' + ${statistics.getNumberOfDeletedNotes().statValue}"></h2>
   </div>
 </div>
 

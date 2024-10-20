@@ -3,18 +3,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import km.Projekt.dao.NoteDao;
 import km.Projekt.dao.UserDao;
-import km.Projekt.entity.Entity;
-import km.Projekt.entity.SessionStatistics;
+import km.Projekt.entity.statistics.SessionStatistics;
 import km.Projekt.entity.User;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import km.Projekt.entity.UserFactory;
+import km.Projekt.iterators.UserIterator;
+import km.Projekt.iterators.UserNameIterator;
 import km.Projekt.validation.EditingValidation;
 import km.Projekt.validation.PasswordValidation;
 import km.Projekt.validation.RegistrationValidation;
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -25,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class UserController {
@@ -74,13 +74,23 @@ public class UserController {
         return "profile";
     }
     @GetMapping("/users")
-    public String usersPage(Model model) {
-        Iterable<User> users = userDao.findAll();
+    public String usersPage(Model model, @RequestParam(name = "filterName", required = false) String filterName) {
+        List<User> users = new ArrayList<>();
+        if (filterName == null || filterName.isBlank() || filterName.isEmpty()) {
+            Iterable<User> iUsers = userDao.findAll();
+            for (User iUser : iUsers) {
+                users.add(iUser);
+            }
+        } else {
+            UserIterator userIterator = new UserNameIterator(filterName);
+            while(userIterator.hasNext()) users.add(userIterator.getNext());
+        }
+
         List<Integer> numberOfNotes = new ArrayList<>();
         for (User user : users) {
             numberOfNotes.add(noteDao.findAllByUser(user).size());
         }
-        model.addAttribute("usersList", userDao.findAll());
+        model.addAttribute("usersList", users);
         model.addAttribute("numberOfNotes", numberOfNotes);
         return "users";
     }

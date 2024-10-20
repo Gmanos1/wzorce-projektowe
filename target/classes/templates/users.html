@@ -12,6 +12,14 @@
 
 <div class="users-container">
     <h1>Zarejestrowani użytkownicy</h1>
+    <form th:action="@{/users}" method="GET">
+        <table>
+            <tr>
+                <td><input type="text" id="filterName" name="filterName" placeholder="Filtruj po imieniu"></td>
+                <td><button type="submit">Filtruj</button></td>
+            </tr>
+        </table>
+    </form>
     <table th:if="${!#lists.isEmpty(usersList)}" class="user-table">
         <thead>
             <tr>
