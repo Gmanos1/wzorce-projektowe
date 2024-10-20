@@ -28,7 +28,7 @@ public class UserAuthenticationDetails implements UserDetailsService {
             UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                     user.getLogin(), user.getPassword(), true, true, true, true, authorities);
 
-            return new UserDetailsDecorator(userDetails); // Use the decorator here
+            return new UserDetailsDecorator(userDetails);
         } else {
             throw new UsernameNotFoundException("Invalid login or password.");
         }

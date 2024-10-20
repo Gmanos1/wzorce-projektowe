@@ -2,6 +2,7 @@ package km.Projekt.entity;
 
 import lombok.Getter;
 
+// L1 singleton statistics
 @Getter
 public class SessionStatistics {
     private static volatile SessionStatistics instance;
