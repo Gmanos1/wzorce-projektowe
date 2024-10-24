@@ -2,6 +2,7 @@ package km.Projekt.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import km.Projekt.entity.memento.NoteMemento;
 import km.Projekt.notesView.NoteStyle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,5 +46,16 @@ public class Note implements Entity {
 
     public void displayNote() { // L1 - FLYWEIGHT, wyświetlenie notatki
         System.out.println("Notatka: " + noteStyle);
+    }
+
+    // L2 - MEMENTO
+    //tworzenie memento z treści
+    public NoteMemento saveToMemento() {
+        return new NoteMemento(content, title);
+    }
+
+    //przywrócenie treści memento
+    public void restoreFromMemento(NoteMemento memento) {
+        this.content = memento.getSavedContent();
     }
 }

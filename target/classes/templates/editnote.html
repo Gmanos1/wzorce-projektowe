@@ -11,7 +11,7 @@
 <div th:include="layout :: navigationPanel" class="nav-container"></div>
 
 <div class="container">
-    <h1>Add New Note:</h1>
+    <h1>Edit Note:</h1>
     <form th:action="@{'/editnote/' + ${note.id}}" method="POST" th:object="${note}" class="note-form">
         <div class="form-group">
             <input type="text" th:field="*{title}" placeholder="Tytuł" required>
@@ -27,6 +27,10 @@
             </label>
         </div>
         <button type="submit">Edytuj notatkę</button>
+    </form>
+
+    <form th:action="@{'/notes/memento/undo/' + ${note.id}}" method="POST">
+        <button type="submit" class="undo-button">Cofnij edycję</button>
     </form>
 </div>
 
