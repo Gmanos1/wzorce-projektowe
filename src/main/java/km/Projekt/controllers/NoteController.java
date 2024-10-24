@@ -96,6 +96,12 @@ public class NoteController {
         Note foundNote = noteToBeFound.get();
         model.addAttribute("note", foundNote);
 
+        // L2 - MEMENTO - zapis stanu przed edycją
+        Note newNote = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
+        noteCaretaker.saveState(newNote.saveToMemento());
+
+        model.addAttribute("note", newNote);
+
         return "editnote";
     }
 
@@ -128,16 +134,6 @@ public class NoteController {
     // L2 - MEMENTO:
     private NoteCaretaker noteCaretaker = new NoteCaretaker(); //obiekt zarządzający notatkami
 
-    @GetMapping("/notes/memento/edit/{id}") //zapis stanu przed edycją
-    public String showEditFormWithMemento(@PathVariable("id") Integer id, Model model) {
-        Note note = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
-
-        noteCaretaker.saveState(note.saveToMemento());
-
-        model.addAttribute("note", note);
-        return "editnote";
-    }
-
     @PostMapping("/notes/memento/undo/{id}") //przywraca ostatni stan notatki
     public String undoEdit(@PathVariable("id") Integer id, Model model) {
         Note note = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid note ID"));
@@ -145,6 +141,7 @@ public class NoteController {
         // Restore the last saved state if available
         NoteMemento lastState = noteCaretaker.restoreState();
         if (lastState != null) {
+            System.out.println("LAST STATE: " + lastState);
             note.restoreFromMemento(lastState);
             noteDao.save(note);
         }
