@@ -28,12 +28,8 @@
             </label>
         </div>
         <button type="submit">Edytuj notatkę</button>
-        <button type="button" th:onclick="'restoreNoteContent(' + ${ note.id } +')'"></button>
+        <button type="button" th:onclick="'restoreNoteContent(' + ${ note.id } +')'">Przywróć tekst w textarea</button>
     </form>
-
-    <!-- Przycisk do przywracania treści bez odświeżania -->
-
-
 </div>
 
 <div th:include="layout :: footer"></div>
@@ -44,8 +40,6 @@
 <script th:inline="javascript">
     function restoreNoteContent(noteId) {
         const csrfToken = document.querySelector('input[name="_csrf"]').value;
-
-        console.info('NOTE CONTENT')
         fetch(`/notes/memento/undo/${noteId}`, {
             method: 'POST',
             headers: {
