@@ -2,6 +2,7 @@ package km.Projekt.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import km.Projekt.entity.mediator.Mediator;
 import km.Projekt.entity.memento.NoteMemento;
 import km.Projekt.entity.observer.Observer;
 import km.Projekt.notesView.NoteStyle;
@@ -79,8 +80,10 @@ public class Note implements Entity {
         observers.remove(observer);
     }
 
-    public void createNoteText(String newText) {
-        notifyObservers("Nowa notatka: " + newText);
+    public void createNoteText(String newText) { // -> zmiana mediatora
+        if (isPublic) {
+            mediator.notify(this, "publicNoteCreated");
+        }
     }
 
     private void notifyObservers(String message) { //powiadomienie obserwatorów o zmianie
@@ -94,6 +97,14 @@ public class Note implements Entity {
     public void updateText(String newText) { //zmiana treści notatki i powiadowmienie obserwatorów
         this.text = newText;
         notifyObservers("Treść notatki została zaktualizowana: " + newText);
+    }
+
+
+    // L2 - MEDIATOR
+    @Transient
+    private Mediator mediator;
+    public Note(Mediator mediator) {
+        this.mediator = mediator;
     }
 
 }
