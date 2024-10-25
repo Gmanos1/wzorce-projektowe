@@ -3,15 +3,19 @@ package km.Projekt.entity.memento;
 import java.util.Stack;
 
 public class NoteCaretaker {
-    private Stack<NoteMemento> mementoStack = new Stack<>();
+    private final Stack<NoteMemento> mementoStack = new Stack<>();
 
-    public void saveState(NoteMemento memento) {
-        System.out.println("SAVE STATE: " + memento);
+    public void saveMemento(NoteMemento memento) {
+        System.out.println("Saved memento: " + memento);
         mementoStack.push(memento);
     }
 
-    public NoteMemento restoreState() {
-        System.out.println("RESTORE STATE: " + mementoStack);
-        return mementoStack.isEmpty() ? null : mementoStack.pop();
+    public NoteMemento restoreMemento() {
+        if (!mementoStack.isEmpty()) {
+            System.out.println("Memento stack: " + mementoStack);
+            return mementoStack.pop();
+        }
+
+        return null;
     }
 }

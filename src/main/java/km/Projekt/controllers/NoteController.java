@@ -8,7 +8,9 @@ import km.Projekt.entity.NoteManagerFacade;
 import km.Projekt.entity.memento.NoteCaretaker;
 import km.Projekt.entity.memento.NoteMemento;
 import km.Projekt.entity.statistics.SessionStatistics;
-import km.Projekt.logging.*;
+import km.Projekt.logging.ErrorLogger;
+import km.Projekt.logging.MessageLogger;
+import km.Projekt.logging.ShowMessage;
 import km.Projekt.notesView.NoteStyle;
 import km.Projekt.notesView.NoteStyleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,8 @@ public class NoteController {
     private UserDao userDao;
     ShowMessage messages = new ShowMessage();
     SessionStatistics sessionStatistics = SessionStatistics.getInstance();
+    private final NoteCaretaker noteCaretaker = new NoteCaretaker();
+
     @GetMapping("/notes")
     public String getNote(@RequestParam(required = false) Boolean my, Model model, Principal principal) {
         sessionStatistics.incrementNumberOfViewedNotes();
@@ -94,13 +98,11 @@ public class NoteController {
         Optional<Note> noteToBeFound = noteDao.findById(id);
         if (!noteToBeFound.isPresent()) { return "notes"; }
         Note foundNote = noteToBeFound.get();
+
+        noteCaretaker.saveMemento(foundNote.saveToMemento());
+        System.out.println("Saved: " + foundNote);
+
         model.addAttribute("note", foundNote);
-
-        // L2 - MEMENTO - zapis stanu przed edycją
-        Note newNote = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
-        noteCaretaker.saveState(newNote.saveToMemento());
-
-        model.addAttribute("note", newNote);
 
         return "editnote";
     }
@@ -130,23 +132,19 @@ public class NoteController {
         return "redirect:/notes";
     }
 
+    // L2 - MEMENTO
+    @PostMapping("/notes/memento/undo/{id}")
+    @ResponseBody
+    public String undoEdit(@PathVariable("id") Integer id) {
+        Note note = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
 
-    // L2 - MEMENTO:
-    private NoteCaretaker noteCaretaker = new NoteCaretaker(); //obiekt zarządzający notatkami
-
-    @PostMapping("/notes/memento/undo/{id}") //przywraca ostatni stan notatki
-    public String undoEdit(@PathVariable("id") Integer id, Model model) {
-        Note note = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid note ID"));
-
-        // Restore the last saved state if available
-        NoteMemento lastState = noteCaretaker.restoreState();
-        if (lastState != null) {
-            System.out.println("LAST STATE: " + lastState);
-            note.restoreFromMemento(lastState);
+        NoteMemento previousState = noteCaretaker.restoreMemento();
+        if (previousState != null) {
+            note.restoreFromMemento(previousState);
             noteDao.save(note);
         }
 
-        model.addAttribute("note", note);
-        return "redirect:/editnote/" + id;
+        return note.getText();
     }
 }
+

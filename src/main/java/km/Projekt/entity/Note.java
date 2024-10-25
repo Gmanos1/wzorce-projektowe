@@ -49,14 +49,20 @@ public class Note implements Entity {
     }
 
     // L2 - MEMENTO
-    //tworzenie memento z treści
     public NoteMemento saveToMemento() {
-        return new NoteMemento(content);
+        return new NoteMemento(text);
     }
 
-    //przywrócenie treści memento
     public void restoreFromMemento(NoteMemento memento) {
-        System.out.println("RESTORE: " + memento);
-        this.content = memento.getSavedContent();
+        if (memento != null) {
+            this.text = memento.getContent();
+        }
     }
+
+    @Override
+    public String toString() {
+        return "Notatka { content = " + text + "}";
+    }
+
 }
+
