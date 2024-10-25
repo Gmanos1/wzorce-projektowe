@@ -7,6 +7,8 @@ import km.Projekt.entity.Note;
 import km.Projekt.entity.NoteManagerFacade;
 import km.Projekt.entity.memento.NoteCaretaker;
 import km.Projekt.entity.memento.NoteMemento;
+import km.Projekt.entity.observer.LoggerObserver;
+import km.Projekt.entity.observer.Notifier;
 import km.Projekt.entity.statistics.SessionStatistics;
 import km.Projekt.logging.ErrorLogger;
 import km.Projekt.logging.MessageLogger;
@@ -71,6 +73,18 @@ public class NoteController {
             return "addnote";
         }
         note.setUser(userDao.findByLogin(principal.getName()));
+
+        //L2 - OBSERVER - dodanie obserwatorów i powiadomienie ich, jeżeli notatka jest publicza i została utworzona
+        if (note.isPublic) {
+            LoggerObserver logger = new LoggerObserver();
+            Notifier notifier = new Notifier();
+
+            note.addObserver(logger);
+            note.addObserver(notifier);
+
+            note.createNoteText(note.getText());
+        }
+
         noteDao.save(note);
 
         NoteManagerFacade noteManagerFacade = new NoteManagerFacade(); //tworzenie fasady

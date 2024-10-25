@@ -3,12 +3,14 @@ package km.Projekt.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import km.Projekt.entity.memento.NoteMemento;
+import km.Projekt.entity.observer.Observer;
 import km.Projekt.notesView.NoteStyle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -62,6 +64,36 @@ public class Note implements Entity {
     @Override
     public String toString() {
         return "Notatka { content = " + text + "}";
+    }
+
+
+    // L2 - OBSERVER
+    @Transient
+    private final List<Observer> observers = new ArrayList<>();
+
+    public void addObserver(Observer observer) { //dodawanie obserwatora
+        observers.add(observer);
+    }
+
+    public void removeObserver(Observer observer) { //usuwanie obserwatora
+        observers.remove(observer);
+    }
+
+    public void createNoteText(String newText) {
+        notifyObservers("Nowa notatka: " + newText);
+    }
+
+    private void notifyObservers(String message) { //powiadomienie obserwatorów o zmianie
+        if (isPublic) {
+            for (Observer observer : observers) {
+                observer.update(message);
+            }
+        }
+    }
+
+    public void updateText(String newText) { //zmiana treści notatki i powiadowmienie obserwatorów
+        this.text = newText;
+        notifyObservers("Treść notatki została zaktualizowana: " + newText);
     }
 
 }
