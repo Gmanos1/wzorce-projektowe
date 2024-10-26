@@ -4,7 +4,7 @@ package km.Projekt;
 import km.Projekt.loggingCommand.Command;
 import km.Projekt.loggingCommand.Logger;
 import km.Projekt.loggingCommand.ShowMessageCommand;
-import km.Projekt.state.Note;
+import km.Projekt.state.NoteWithState;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -18,7 +18,7 @@ public class Projekt {
 		executeCommand(new ShowMessageCommand(loggerTest));
 
 		//L2 - STATE - przykładowe użycie
-		Note note = new Note();
+		NoteWithState note = new NoteWithState();
 		note.edit();
 		note.archive();
 		note.publish();

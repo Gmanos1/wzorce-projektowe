@@ -2,10 +2,10 @@ package km.Projekt.state;
 
 //L2 - STATE - klasa bazowa obiektu note
 
-public class Note {
+public class NoteWithState {
     private StateContext stateContext;
 
-    public Note() {
+    public NoteWithState() {
         this.stateContext = new StateContext();
     }
 

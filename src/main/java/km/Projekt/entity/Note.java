@@ -34,7 +34,6 @@ public class Note implements Entity {
     public NoteStyle noteStyle; //współdzieony styl notatki L1 - FLYWEIGHT
     @ElementCollection
     public List<String> tags; //lista tagów dla notatki
-
     @ManyToOne
     public User user;
 
@@ -106,6 +105,7 @@ public class Note implements Entity {
     public Note(Mediator mediator) {
         this.mediator = mediator;
     }
+
 
 }
 

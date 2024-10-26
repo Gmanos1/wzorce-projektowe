@@ -13,15 +13,15 @@ public class StateContext {
         this.state = state;
     }
 
-    public void edit(Note note) {
+    public void edit(NoteWithState note) {
         state.edit(note);
     }
 
-    public void publish(Note note) {
+    public void publish(NoteWithState note) {
         state.publish(note);
     }
 
-    public void archive(Note note) {
+    public void archive(NoteWithState note) {
         state.archive(note);
     }
 }
