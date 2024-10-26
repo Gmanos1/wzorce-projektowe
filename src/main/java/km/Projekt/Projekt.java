@@ -14,8 +14,8 @@ public class Projekt {
 		SpringApplication.run(Projekt.class, args);
 
 		//L2 - LOGGER - przykładowe użycie
-//		Logger loggerTest = new Logger("test", false);
-//		executeCommand(new ShowMessageCommand(loggerTest));
+		Logger loggerTest = new Logger("test", false);
+		executeCommand(new ShowMessageCommand(loggerTest));
 
 		//L2 - STATE - przykładowe użycie
 		NoteWithState note = new NoteWithState();
