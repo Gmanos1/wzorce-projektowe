@@ -81,6 +81,7 @@ public class Note implements Entity {
 
     public void createNoteText(String newText) { // -> zmiana mediatora
         if (isPublic) {
+            notifyObservers("Nowa notatka: " + newText);
             mediator.notify(this, "publicNoteCreated");
         }
     }

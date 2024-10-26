@@ -76,13 +76,13 @@ public class NoteController {
         note.setUser(userDao.findByLogin(principal.getName()));
 
         //L2 - OBSERVER - dodanie obserwatorów i powiadomienie ich, jeżeli notatka jest publicza i została utworzona
-//        if (note.isPublic) {
+        if (note.isPublic) {
         //L2 - MEDIATOR - zmiana nie tworzymy loggera i notifiera, tylko tworzymy dla nich mediatora
         LoggerObserver logger = new LoggerObserver();
         Notifier notifier = new Notifier();
 
-//        note.addObserver(logger);
-//        note.addObserver(notifier);
+        note.addObserver(logger);
+        note.addObserver(notifier);
 
         NoteMediator mediator = new NoteMediator(logger, notifier);
         Note publicNote = new Note(mediator);
@@ -93,7 +93,7 @@ public class NoteController {
         if (publicNote.isPublic) {
             publicNote.createNoteText(publicNote.getText());
         }
-//        }
+        }
 
         noteDao.save(note);
 
