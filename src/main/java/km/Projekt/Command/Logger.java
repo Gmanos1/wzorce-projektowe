@@ -1,4 +1,4 @@
-package km.Projekt.loggingCommand;
+package km.Projekt.Command;
 
 //L2 - COMMAND  - klasa bazowa logu tekstowego
 

@@ -1,9 +1,9 @@
 package km.Projekt;
 
 
-import km.Projekt.loggingCommand.Command;
-import km.Projekt.loggingCommand.Logger;
-import km.Projekt.loggingCommand.ShowMessageCommand;
+import km.Projekt.Command.Command;
+import km.Projekt.Command.Logger;
+import km.Projekt.Command.ShowMessageCommand;
 import km.Projekt.state.NoteWithState;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

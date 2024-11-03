@@ -1,8 +1,8 @@
 package km.Projekt.entity.statistics;
 
 //L2 template
-public class StatColorEntry extends StatEntry{
-    public final String color;
+public class StatColorEntry extends StatEntry implements IColorEntry{
+    private String color;
 
     public StatColorEntry(String statName, int statValue, String color){
         super(statName, statValue);
@@ -12,5 +12,11 @@ public class StatColorEntry extends StatEntry{
     @Override
     public String toString() {
         return super.toString() + String.format(", kolor: %s", color);
+    }
+
+    // L3 Interface Segregation
+    @Override
+    public void setColor(String color) {
+        this.color = color;
     }
 }

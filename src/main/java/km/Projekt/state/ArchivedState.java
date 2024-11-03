@@ -18,4 +18,9 @@ public class ArchivedState implements State {
     public void archive(NoteWithState note) {
         System.out.println("The note is already archived.");
     }
+
+    @Override
+    public String getState() {
+        return "Current state is archived";
+    }
 }

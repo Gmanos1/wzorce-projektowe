@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 // L2 Iterator
-public class UserNameIterator extends UserIterator{
+public class UserNameAnotherIterator extends UserIterator{
     private int currentPosition = 0;
     private final List<User> listOfUsers = new ArrayList<>();
     private UserDao userDao;
     private final String filterName;
 
-    public UserNameIterator(String filterName) {
+    public UserNameAnotherIterator(String filterName) {
         userDao = SpringContext.getApplicationContext().getBean(UserDao.class);
 
         this.filterName = filterName;

@@ -19,4 +19,8 @@ public class DraftState implements State {
     public void archive(NoteWithState note) {
         System.out.println("Draft cannot be archived directly.");
     }
+    @Override
+    public String getState() {
+        return "Current state is draft";
+    }
 }

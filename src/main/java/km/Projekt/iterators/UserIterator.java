@@ -3,10 +3,10 @@ package km.Projekt.iterators;
 import km.Projekt.entity.User;
 
 // L2 Iterator
-public interface UserIterator {
-    boolean hasNext();
+public abstract class UserIterator {
+    abstract public boolean hasNext();
 
-    User getNext();
+    abstract public User getNext();
 
-    void reset();
+    abstract public void reset();
 }

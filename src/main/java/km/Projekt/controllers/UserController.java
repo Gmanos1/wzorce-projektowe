@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import km.Projekt.iterators.UserIterator;
+import km.Projekt.iterators.UserNameAnotherIterator;
 import km.Projekt.iterators.UserNameIterator;
 import km.Projekt.validation.EditingValidation;
 import km.Projekt.validation.PasswordValidation;
@@ -83,6 +84,17 @@ public class UserController {
             }
         } else {
             UserIterator userIterator = new UserNameIterator(filterName);
+            // L3 Liskov
+            UserIterator userAnotherIterator = new UserNameAnotherIterator(filterName);
+
+            List<UserIterator> userIteratorList = new ArrayList<UserIterator>();
+            userIteratorList.add(userIterator);
+            userIteratorList.add(userAnotherIterator);
+
+            for(UserIterator ui : userIteratorList){
+                ui.getNext();
+            }
+            //
             while(userIterator.hasNext()) users.add(userIterator.getNext());
         }
 

@@ -2,6 +2,9 @@ package km.Projekt.entity.statistics;
 
 import lombok.Getter;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 // L1 singleton statistics
 // L2 statistics entry as a template
 
@@ -26,6 +29,21 @@ public class SessionStatistics {
             return instance;
         }
     }
+
+    // L3 Liskov
+    public void processEntries(){
+        ArrayList<StatEntry> arrayList = new ArrayList<StatEntry>();
+        arrayList.add(numberOfLogins);
+        arrayList.add(numberOfProfileViews);
+        arrayList.add(numberOfAddedNotes);
+        arrayList.add(numberOfDeletedNotes);
+        arrayList.add(numberOfViewedNotes);
+
+        for(StatEntry statEntry : arrayList) {
+            System.out.println(statEntry.toString());
+        }
+    }
+    //
     public void incrementNumberOfLogins() {
         this.numberOfLogins.statValue++;
     }

@@ -19,4 +19,8 @@ public class PublishedState implements State {
         System.out.println("Archiving the published note.");
         note.setState(new ArchivedState());
     }
+    @Override
+    public String getState() {
+        return "Current state is published";
+    }
 }
