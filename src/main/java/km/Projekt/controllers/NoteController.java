@@ -12,6 +12,10 @@ import km.Projekt.entity.observer.LoggerObserver;
 import km.Projekt.entity.observer.Notifier;
 import km.Projekt.entity.statistics.SessionStatistics;
 import km.Projekt.exception.InvalidIDException;
+import km.Projekt.interfaces.AbstractNoteDeleting;
+import km.Projekt.interfaces.AbstractRestoreNote;
+import km.Projekt.interfaces.DeletingNoteNotification;
+import km.Projekt.interfaces.RestoringNoteNotification;
 import km.Projekt.logging.ErrorLogger;
 import km.Projekt.logging.MessageLogger;
 import km.Projekt.logging.ShowMessage;
@@ -43,6 +47,22 @@ public class NoteController {
 
     private int getNoteStatus(Note note) {
         return note.isPublic ? STATUS_PUBLIC : STATUS_PRIVATE;
+    }
+
+    // L3 - NOTECONTROLLER - DELETE NOTE NOTIFICAITON
+    private AbstractNoteDeleting abstractNoteDeleting;
+    private AbstractRestoreNote abstractRestoreNote;
+    public NoteController() {
+        this.abstractNoteDeleting = new DeletingNoteNotification();
+        this.abstractRestoreNote = new RestoringNoteNotification();
+    }
+
+    public void deleteNoteAction(Integer noteId) {
+        abstractNoteDeleting.deleteNoteDataNotification(noteId);
+    }
+
+    public void restoreNoteAction(Integer id, NoteMemento oldValue) {
+        abstractRestoreNote.restoreNoteDataNotification(id, oldValue);
     }
 
     @GetMapping("/notes")
@@ -168,6 +188,8 @@ public class NoteController {
                 userDao.findByLogin(principal.getName())) { return "notes"; }
         noteDao.deleteById(id);
 
+        deleteNoteAction(id);
+
         sessionStatistics.incrementNumberOfDeletesNotes();
         return "redirect:/notes";
     }
@@ -182,6 +204,8 @@ public class NoteController {
         if (previousState != null) {
             note.restoreFromMemento(previousState);
             noteDao.save(note);
+
+            restoreNoteAction(id, previousState);
         }
 
         return note.getText();

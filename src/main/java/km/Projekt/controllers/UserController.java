@@ -9,6 +9,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import km.Projekt.interfaces.AbstractEditingUser;
+import km.Projekt.interfaces.EditingUserNotification;
 import km.Projekt.iterators.UserIterator;
 import km.Projekt.iterators.UserNameAnotherIterator;
 import km.Projekt.iterators.UserNameIterator;
@@ -36,9 +38,19 @@ public class UserController {
     @Autowired
     private NoteDao noteDao;
     SessionStatistics sessionStatistics = SessionStatistics.getInstance();
+    private AbstractEditingUser abstractEditingUser;
+    public UserController() {
+        this.abstractEditingUser = new EditingUserNotification();
+    }
+
+    public void editUserAction(Long userId, String newData) {
+        abstractEditingUser.editUserDataNotification(userId, newData);
+    }
+
     @GetMapping("/login")
     public String loginPage() {
         sessionStatistics.incrementNumberOfLogins();
+        System.out.println("LOGIN");
         return "login";
     }
     @GetMapping("/register")
@@ -52,14 +64,13 @@ public class UserController {
             return "register";
         }
 
-
         if (userDao.findByLogin(user.getLogin()) != null){
             bindingResult.rejectValue("login",
                     "error.user",
                     "Taki użytkownik już istnieje");
             return "register";
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));;
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.save(user);
         return "redirect:/login";
     }
@@ -142,6 +153,9 @@ public class UserController {
         user.setLogin(previousUser.getLogin());
         user.setPassword(previousUser.getPassword());
         userDao.save(user);
+
+        editUserAction(user.getUserid(), user.getName());
+
         return "profile";
     }
     @PostMapping("/editpassword")
