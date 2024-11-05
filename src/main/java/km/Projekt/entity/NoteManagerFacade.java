@@ -14,7 +14,7 @@ public class NoteManagerFacade { //uproszczenie korzystania z funkcji, wykonuje 
         this.backupService = new BackupService();
     }
 
-    public void addNoteWithFeatures(Note note, Principal principal, String[] tags) {
+    public void addNoteWithTagsAndBackup(Note note, Principal principal, String[] tags) {
         tagManager.addTags(note, tags); //dodawanie tagów do notatek
         notificationService.sendNotification(principal, "Dodano notatkę: " + note.getContent()); //wysyłanie powiedomień
         backupService.createBackup(note); //stworzenie kopii zapasowej notatki

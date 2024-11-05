@@ -75,18 +75,18 @@ public class Note implements Entity {
         observers.add(observer);
     }
 
-    public void removeObserver(Observer observer) { //usuwanie obserwatora
-        observers.remove(observer);
-    }
+//    public void removeObserver(Observer observer) { //usuwanie obserwatora
+//        observers.remove(observer);
+//    }
 
-    public void createNoteText(String newText) { // -> zmiana mediatora
+    public void notifyOfNewNote(String newText) { // -> zmiana mediatora
         if (isPublic) {
-            notifyObservers("Nowa notatka: " + newText);
+            notifyObserversOfNewNote("Nowa notatka: " + newText);
             mediator.notify(this, "publicNoteCreated");
         }
     }
 
-    private void notifyObservers(String message) { //powiadomienie obserwatorów o zmianie
+    private void notifyObserversOfNewNote(String message) { //powiadomienie obserwatorów o zmianie
         if (isPublic) {
             for (Observer observer : observers) {
                 observer.update(message);
@@ -94,10 +94,10 @@ public class Note implements Entity {
         }
     }
 
-    public void updateText(String newText) { //zmiana treści notatki i powiadowmienie obserwatorów
-        this.text = newText;
-        notifyObservers("Treść notatki została zaktualizowana: " + newText);
-    }
+//    public void notifyObserversOfUpdatedNote(String newText) { //zmiana treści notatki i powiadowmienie obserwatorów
+//        this.text = newText;
+//        notifyObserversOfNewNote("Treść notatki została zaktualizowana: " + newText);
+//    }
 
 
     // L2 - MEDIATOR

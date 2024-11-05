@@ -1,7 +1,7 @@
 package km.Projekt.controllers;
 
 import km.Projekt.Command.Command;
-import km.Projekt.Command.Order66Command;
+import km.Projekt.Command.ExecuteCommand;
 import km.Projekt.entity.statistics.SessionStatistics;
 import km.Projekt.Command.Logger;
 import km.Projekt.Command.ShowMessageCommand;
@@ -23,11 +23,11 @@ public class StatisticsController {
         Logger logger = new Logger("Order 66", false);
 
         // L3 Liskov
-        List<Command> executeOrder66 = new ArrayList<>();
-        executeOrder66.add(new ShowMessageCommand(logger));
-        executeOrder66.add(new Order66Command());
+        List<Command> executeCommandOrder = new ArrayList<>();
+        executeCommandOrder.add(new ShowMessageCommand(logger));
+        executeCommandOrder.add(new ExecuteCommand());
 
-        for (Command cmd : executeOrder66) {
+        for (Command cmd : executeCommandOrder) {
             cmd.execute();
         }
 

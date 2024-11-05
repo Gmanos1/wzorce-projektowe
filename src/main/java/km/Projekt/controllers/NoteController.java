@@ -11,6 +11,7 @@ import km.Projekt.entity.memento.NoteMemento;
 import km.Projekt.entity.observer.LoggerObserver;
 import km.Projekt.entity.observer.Notifier;
 import km.Projekt.entity.statistics.SessionStatistics;
+import km.Projekt.exception.InvalidIDException;
 import km.Projekt.logging.ErrorLogger;
 import km.Projekt.logging.MessageLogger;
 import km.Projekt.logging.ShowMessage;
@@ -32,9 +33,17 @@ public class NoteController {
     private NoteDao noteDao;
     @Autowired
     private UserDao userDao;
-    ShowMessage messages = new ShowMessage();
+    ShowMessage messagesHandler = new ShowMessage();
     SessionStatistics sessionStatistics = SessionStatistics.getInstance();
     private final NoteCaretaker noteCaretaker = new NoteCaretaker();
+
+    // L3 - magiczne liczby:
+    private static final int STATUS_PUBLIC = 0;
+    private static final int STATUS_PRIVATE = 1;
+
+    private int getNoteStatus(Note note) {
+        return note.isPublic ? STATUS_PUBLIC : STATUS_PRIVATE;
+    }
 
     @GetMapping("/notes")
     public String getNote(@RequestParam(required = false) Boolean my, Model model, Principal principal) {
@@ -49,11 +58,11 @@ public class NoteController {
 
         //L1 - COMPOSITE - wywołanie klasy, stworzenie listy wiadomosci od wyswietlenia
         if (foundNotes == null) {
-            messages.loadMessages(
+            messagesHandler.loadMessages(
                     new ErrorLogger("error", true)
             );
         } else {
-            messages.loadMessages(
+            messagesHandler.loadMessages(
                     new MessageLogger("wyświetl notatki", false)
             );
         }
@@ -78,21 +87,21 @@ public class NoteController {
         //L2 - OBSERVER - dodanie obserwatorów i powiadomienie ich, jeżeli notatka jest publicza i została utworzona
         if (note.isPublic) {
         //L2 - MEDIATOR - zmiana nie tworzymy loggera i notifiera, tylko tworzymy dla nich mediatora
-        LoggerObserver logger = new LoggerObserver();
-        Notifier notifier = new Notifier();
+            LoggerObserver logger = new LoggerObserver();
+            Notifier notifier = new Notifier();
 
-        note.addObserver(logger);
-        note.addObserver(notifier);
+            note.addObserver(logger);
+            note.addObserver(notifier);
 
-        NoteMediator mediator = new NoteMediator(logger, notifier);
-        Note publicNote = new Note(mediator);
+            NoteMediator mediator = new NoteMediator(logger, notifier);
+            Note publicNote = new Note(mediator);
 
-        publicNote.setText(note.getText());
-        publicNote.setIsPublic(note.isPublic);
+            publicNote.setText(note.getText());
+            publicNote.setIsPublic(note.isPublic);
 
-        if (publicNote.isPublic) {
-            publicNote.createNoteText(publicNote.getText());
-        }
+            if (publicNote.isPublic) {
+                publicNote.notifyOfNewNote(publicNote.getText());
+            }
         }
 
         noteDao.save(note);
@@ -100,7 +109,7 @@ public class NoteController {
         NoteManagerFacade noteManagerFacade = new NoteManagerFacade(); //tworzenie fasady
 
         String[] tags = {"newNote"};
-        noteManagerFacade.addNoteWithFeatures(note, principal, tags); //dodanie notatki z tagami, powiadomieniem i kopią zapasowa
+        noteManagerFacade.addNoteWithTagsAndBackup(note, principal, tags); //dodanie notatki z tagami, powiadomieniem i kopią zapasowa
 
         NoteStyle newNote = NoteStyleFactory.getNoteStyle("Emergency", true); //tworzenie obiektów notatek FLYWEIGHT
         NoteStyle newNote2 = NoteStyleFactory.getNoteStyle("Standard", false);
@@ -114,12 +123,19 @@ public class NoteController {
         note2.displayNote();
         note3.displayNote(); //wyświetlenie styli wraz z notatkami // FLYWEIGHT
 
+        int statusCode = getNoteStatus(note);
+        if (statusCode == STATUS_PUBLIC) {
+            System.out.println("Dodano notatkę publiczną.");
+        } else if (statusCode == STATUS_PRIVATE) {
+            System.out.println("Dodano notatkę prywatną.");
+        }
+
         return "redirect:/notes";
     }
 
     @GetMapping("/editnote/{id}")
     public String editNote(@PathVariable Integer id, Model model) {
-        Optional<Note> noteToBeFound = noteDao.findById(id);
+        Optional<Note> noteToBeFound = Optional.ofNullable(noteDao.findById(id).orElseThrow(() -> new InvalidIDException("Invalid note ID: " + id)));
         if (!noteToBeFound.isPresent()) { return "notes"; }
         Note foundNote = noteToBeFound.get();
 
@@ -145,7 +161,7 @@ public class NoteController {
 
     @GetMapping("/deletenote/{id}")
     public String deleteNote(@PathVariable Integer id, Principal principal) {
-        Optional<Note> noteToBeFound = noteDao.findById(id);
+        Optional<Note> noteToBeFound = Optional.ofNullable(noteDao.findById(id).orElseThrow(() -> new InvalidIDException("Invalid note ID: " + id)));
         if (!noteToBeFound.isPresent()) { return "notes"; }
         Note foundNote = noteToBeFound.get();
         if (foundNote.getUser() !=
@@ -160,7 +176,7 @@ public class NoteController {
     @PostMapping("/notes/memento/undo/{id}")
     @ResponseBody
     public String undoEdit(@PathVariable("id") Integer id) {
-        Note note = noteDao.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid ID"));
+        Note note = noteDao.findById(id).orElseThrow(() -> new InvalidIDException("Invalid ID"));
 
         NoteMemento previousState = noteCaretaker.restoreMemento();
         if (previousState != null) {

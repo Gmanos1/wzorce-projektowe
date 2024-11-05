@@ -2,7 +2,7 @@ package km.Projekt.entity.statistics;
 
 //L2 template
 public class StatColorEntry extends StatEntry implements IColorEntry{
-    private String color;
+    public String color;
 
     public StatColorEntry(String statName, int statValue, String color){
         super(statName, statValue);

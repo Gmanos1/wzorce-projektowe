@@ -9,9 +9,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Projekt {
+public class MainApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(Projekt.class, args);
+		SpringApplication.run(MainApplication.class, args);
 
 		//L2 - LOGGER - przykładowe użycie
 		Logger loggerTest = new Logger("test", false);
