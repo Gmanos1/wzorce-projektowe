@@ -5,6 +5,10 @@ import km.Projekt.entity.memento.NoteMemento;
 public class RestoringNoteNotification extends AbstractRestoreNote {
     @Override
     public void restoreNoteDataNotification(Integer id, NoteMemento oldValue) {
-        System.out.println("RESTORE NOTE: " + id + ", value: " + oldValue);
+        displayMessageOnConsole("RESTORE NOTE: " + id + ", value: " + oldValue);
+    }
+
+    private static void displayMessageOnConsole(String message) {
+        System.out.println(message);
     }
 }

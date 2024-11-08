@@ -22,6 +22,7 @@ import km.Projekt.logging.ShowMessage;
 import km.Projekt.notesView.NoteStyle;
 import km.Projekt.notesView.NoteStyleFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -77,6 +78,12 @@ public class NoteController {
         model.addAttribute("notesList", foundNotes);
 
         //L1 - COMPOSITE - wywołanie klasy, stworzenie listy wiadomosci od wyswietlenia
+        createLogger(foundNotes, messagesHandler);
+
+        return "notes";
+    }
+
+    private static void createLogger(List<Note> foundNotes, ShowMessage messagesHandler) {
         if (foundNotes == null) {
             messagesHandler.loadMessages(
                     new ErrorLogger("error", true)
@@ -86,51 +93,41 @@ public class NoteController {
                     new MessageLogger("wyświetl notatki", false)
             );
         }
-
-        return "notes";
     }
+
     @GetMapping("/addnote")
     public String addNote(Model model) {
         model.addAttribute("note", new Note());
         return "addnote";
     }
 
-    @PostMapping("/addnote")
-    public String addNotePOST(@ModelAttribute @Valid Note note, BindingResult bindingResult, Principal principal){
-        sessionStatistics.incrementNumberOfAddedNotes();
+    private void addObservers(Note note, LoggerObserver logger, Notifier notifier) {
+        note.addObserver(logger);
+        note.addObserver(notifier);
+    }
 
-        if (bindingResult.hasErrors()) {
-            return "addnote";
+    private void setupPublicNoteObservers(Note note) {
+        LoggerObserver logger = new LoggerObserver();
+        Notifier notifier = new Notifier();
+        addObservers(note, logger, notifier);
+        NoteMediator mediator = new NoteMediator(logger, notifier);
+        Note publicNote = new Note(mediator);
+
+        publicNote.setText(note.getText());
+        publicNote.setIsPublic(note.isPublic);
+        if (publicNote.isPublic) {
+            publicNote.notifyOfNewNote(publicNote.getText());
         }
-        note.setUser(userDao.findByLogin(principal.getName()));
+    }
 
-        //L2 - OBSERVER - dodanie obserwatorów i powiadomienie ich, jeżeli notatka jest publicza i została utworzona
-        if (note.isPublic) {
-        //L2 - MEDIATOR - zmiana nie tworzymy loggera i notifiera, tylko tworzymy dla nich mediatora
-            LoggerObserver logger = new LoggerObserver();
-            Notifier notifier = new Notifier();
-
-            note.addObserver(logger);
-            note.addObserver(notifier);
-
-            NoteMediator mediator = new NoteMediator(logger, notifier);
-            Note publicNote = new Note(mediator);
-
-            publicNote.setText(note.getText());
-            publicNote.setIsPublic(note.isPublic);
-
-            if (publicNote.isPublic) {
-                publicNote.notifyOfNewNote(publicNote.getText());
-            }
-        }
-
-        noteDao.save(note);
-
+    private void saveAndLogNoteDetails(Note note, Principal principal) {
         NoteManagerFacade noteManagerFacade = new NoteManagerFacade(); //tworzenie fasady
 
         String[] tags = {"newNote"};
         noteManagerFacade.addNoteWithTagsAndBackup(note, principal, tags); //dodanie notatki z tagami, powiadomieniem i kopią zapasowa
+    }
 
+    private void createAndDisplayNoteStyles() {
         NoteStyle newNote = NoteStyleFactory.getNoteStyle("Emergency", true); //tworzenie obiektów notatek FLYWEIGHT
         NoteStyle newNote2 = NoteStyleFactory.getNoteStyle("Standard", false);
         NoteStyle newNote3 = NoteStyleFactory.getNoteStyle("Emergency", true); //współdzielenie stylu z note1
@@ -142,13 +139,34 @@ public class NoteController {
         note1.displayNote();
         note2.displayNote();
         note3.displayNote(); //wyświetlenie styli wraz z notatkami // FLYWEIGHT
+    }
 
+    private void showMessages(Note note) {
         int statusCode = getNoteStatus(note);
         if (statusCode == STATUS_PUBLIC) {
             System.out.println("Dodano notatkę publiczną.");
         } else if (statusCode == STATUS_PRIVATE) {
             System.out.println("Dodano notatkę prywatną.");
         }
+    }
+
+    @PostMapping("/addnote")
+    public String addNotePOST(@ModelAttribute @Valid Note note, BindingResult bindingResult, Principal principal){
+        sessionStatistics.incrementNumberOfAddedNotes();
+
+        if (bindingResult.hasErrors()) {
+            return "addnote";
+        }
+        note.setUser(userDao.findByLogin(principal.getName()));
+        //L2 - OBSERVER - dodanie obserwatorów i powiadomienie ich, jeżeli notatka jest publicza i została utworzona
+        if (note.isPublic) {
+        //L2 - MEDIATOR - zmiana nie tworzymy loggera i notifiera, tylko tworzymy dla nich mediatora
+            setupPublicNoteObservers(note);
+        }
+        noteDao.save(note);
+        saveAndLogNoteDetails(note, principal);
+        createAndDisplayNoteStyles();
+        showMessages(note);
 
         return "redirect:/notes";
     }
@@ -168,11 +186,12 @@ public class NoteController {
     }
 
     @PostMapping("/editnote/{id}")
-    public String editNotePOST(@ModelAttribute @Valid Note note, BindingResult bindingResult, @PathVariable Long id, Principal principal) {
+    public String editNotePOST(@ModelAttribute @Valid Note note, @PathVariable Long id, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "editnote";
         }
-        note.setUser(userDao.findByLogin(principal.getName()));
+        String principalName = SecurityContextHolder.getContext().getAuthentication().getName();
+        note.setUser(userDao.findByLogin(principalName));
         note.setId(id);
         noteDao.save(note);
 

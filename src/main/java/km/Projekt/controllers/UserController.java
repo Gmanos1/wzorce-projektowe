@@ -85,19 +85,23 @@ public class UserController {
         sessionStatistics.incrementNumberOfProfileViews();
         return "profile";
     }
+
+    private void addUsersToList(List<User> users) {
+        Iterable<User> iUsers = userDao.findAll();
+        for (User iUser : iUsers) {
+            users.add(iUser);
+        }
+    }
+
     @GetMapping("/users")
     public String usersPage(Model model, @RequestParam(name = "filterName", required = false) String filterName) {
         List<User> users = new ArrayList<>();
         if (filterName == null || filterName.isBlank() || filterName.isEmpty()) {
-            Iterable<User> iUsers = userDao.findAll();
-            for (User iUser : iUsers) {
-                users.add(iUser);
-            }
+            addUsersToList(users);
         } else {
             UserIterator userIterator = new UserNameIterator(filterName);
             // L3 Liskov
             UserIterator userAnotherIterator = new UserNameAnotherIterator(filterName);
-
             List<UserIterator> userIteratorList = new ArrayList<UserIterator>();
             userIteratorList.add(userIterator);
             userIteratorList.add(userAnotherIterator);
@@ -105,10 +109,8 @@ public class UserController {
             for(UserIterator ui : userIteratorList){
                 ui.getNext();
             }
-            //
             while(userIterator.hasNext()) users.add(userIterator.getNext());
         }
-
         List<Integer> numberOfNotes = new ArrayList<>();
         for (User user : users) {
             numberOfNotes.add(noteDao.findAllByUser(user).size());
@@ -161,18 +163,21 @@ public class UserController {
     @PostMapping("/editpassword")
     public String editPagePasswordPOST(@ModelAttribute @Validated(PasswordValidation.class) User user,
                                BindingResult bindingResult,
-                               Model model,
                                Principal principal) {
         User previousUser = userDao.findByLogin(principal.getName());
         if (bindingResult.hasErrors()) {
             return "edit";
         }
+        setUserProperties(user, previousUser, passwordEncoder);
+        userDao.save(user);
+        return "profile";
+    }
+
+    private static void setUserProperties(User user, User previousUser, PasswordEncoder passwordEncoder) {
         user.setUserid(previousUser.getUserid());
         user.setLogin(previousUser.getLogin());
         user.setName(previousUser.getName());
         user.setSurname(previousUser.getSurname());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.save(user);
-        return "profile";
     }
 }

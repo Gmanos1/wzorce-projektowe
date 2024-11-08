@@ -1,6 +1,7 @@
 package km.Projekt.notesView;
 
 import km.Projekt.entity.strategy.BasicStyle;
+import km.Projekt.entity.strategy.NoteStyleStrategy;
 import km.Projekt.entity.strategy.PriorityStyle;
 
 import java.util.HashMap;
@@ -15,20 +16,35 @@ public class NoteStyleFactory { //zarządzanie współdzielonymi obiektami NodeS
         String key = priority + active;
 
         if (!styles.containsKey(key)) {
-            styles.put(key, new NoteStyle(priority, active, new BasicStyle()));
-            System.out.println("Tworzenie nowej notatki"); //tworzenie nowego obiektu notatki
-
+            styles.put(key, createNoteStyleObject(priority, active, new BasicStyle()));
+            displayMessageOnConsole("Tworzenie nowej notatki"); //tworzenie nowego obiektu notatki
 
             // L2 - STRATEGY
-            NoteStyle newBasicNote = new NoteStyle("Standard", true, new BasicStyle());
-            NoteStyle newPriorityNote = new NoteStyle("Emergency", true, new PriorityStyle("Emergency"));
-            System.out.println(newBasicNote.applyStyle("Example basic note"));
-            System.out.println(newPriorityNote.applyStyle("Example priority note"));
+            strategyCreatingNotes();
 
         } else {
-            System.out.println("Taka notatka już istnieje"); //zwrocenie informacji, jezeli dana notatka juz istnieje
+            displayMessageOnConsole("Taka notatka już istnieje"); //zwrocenie informacji, jezeli dana notatka juz istnieje
         }
 
         return styles.get(key);
+    }
+
+    private static void displayMessageOnConsole(String message) {
+        System.out.println(message);
+    }
+
+    private static NoteStyle createNoteStyleObject(String styleName, boolean isActive, NoteStyleStrategy styleStrategy) {
+        return new NoteStyle(styleName, isActive, styleStrategy);
+    }
+
+    private static void strategyCreatingNotes() {
+        NoteStyle newBasicNote = createNoteStyleObject("Standard", true, new BasicStyle());
+        NoteStyle newPriorityNote = createNoteStyleObject("Emergency", true, new PriorityStyle("Emergency"));
+        displayMessages(newBasicNote, newPriorityNote);
+    }
+
+    private static void displayMessages(NoteStyle newBasicNote, NoteStyle newPriorityNote) {
+        displayMessageOnConsole(newBasicNote.applyStyle("Example basic note"));
+        displayMessageOnConsole(newPriorityNote.applyStyle("Example priority note"));
     }
 }

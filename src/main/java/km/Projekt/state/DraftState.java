@@ -11,16 +11,24 @@ public class DraftState implements State {
 
     @Override
     public void publish(NoteWithState note) {
-        System.out.println("Publishing the note from draft to published state.");
+        displayMessageOnConsole("Publishing the note from draft to published state.");
+        publishSetState(note);
+    }
+
+    private static void publishSetState(NoteWithState note) {
         note.setState(new PublishedState());
     }
 
     @Override
     public void archive(NoteWithState note) {
-        System.out.println("Draft cannot be archived directly.");
+        displayMessageOnConsole("Draft cannot be archived directly.");
     }
     @Override
     public String getState() {
         return "Current state is draft";
+    }
+
+    private static void displayMessageOnConsole(String message) {
+        System.out.println(message);
     }
 }
