@@ -1,6 +1,7 @@
 package km.Projekt.entity.statistics;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -8,14 +9,16 @@ import java.util.ArrayList;
 // L1 singleton statistics
 // L2 statistics entry as a template
 
+@Getter
+@Setter
 public class SessionStatistics {
     private static volatile SessionStatistics instance;
-    private final StatColorEntry numberOfLogins = new StatColorEntry("numberOfLogins", 0, "red");
-    private final StatColorEntry numberOfProfileViews = new StatColorEntry("numberOfProfileViews", 0, "green");
-    private final StatColorEntry numberOfAddedNotes = new StatColorEntry("numberOfAddedNotes", 0, "blue");
-    private final StatColorEntry numberOfDeletedNotes = new StatColorEntry("numberOfDeletedNotes", 0, "yellow");
-    private final StatBoldEntry numberOfViewedNotes = new StatBoldEntry("numberOfViewedNotes", 0);
-    private SessionStatistics(){};
+    public final StatColorEntry numberOfLogins = new StatColorEntry("numberOfLogins", 0, "red");
+    public final StatColorEntry numberOfProfileViews = new StatColorEntry("numberOfProfileViews", 0, "green");
+    public final StatColorEntry numberOfAddedNotes = new StatColorEntry("numberOfAddedNotes", 0, "blue");
+    public final StatColorEntry numberOfDeletedNotes = new StatColorEntry("numberOfDeletedNotes", 0, "yellow");
+    public final StatBoldEntry numberOfViewedNotes = new StatBoldEntry("numberOfViewedNotes", 0);
+    public SessionStatistics(){};
 
     public static SessionStatistics getInstance() {
         SessionStatistics result = instance;

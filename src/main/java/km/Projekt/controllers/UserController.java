@@ -9,6 +9,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import km.Projekt.functional.ChangePasswordNotificationFunctional;
 import km.Projekt.interfaces.AbstractEditingUser;
 import km.Projekt.interfaces.EditingUserNotification;
 import km.Projekt.iterators.UserIterator;
@@ -38,7 +39,7 @@ public class UserController {
     @Autowired
     private NoteDao noteDao;
     SessionStatistics sessionStatistics = SessionStatistics.getInstance();
-    private AbstractEditingUser abstractEditingUser;
+    private final AbstractEditingUser abstractEditingUser;
     public UserController() {
         this.abstractEditingUser = new EditingUserNotification();
     }
@@ -170,6 +171,9 @@ public class UserController {
         }
         setUserProperties(user, previousUser, passwordEncoder);
         userDao.save(user);
+
+        ChangePasswordNotificationFunctional changePassword = passwordOwner -> "Hasło zostało zmienione dla użytkownika " + passwordOwner.getName();
+        System.out.println(changePassword.changePasswordNotify(user));
         return "profile";
     }
 

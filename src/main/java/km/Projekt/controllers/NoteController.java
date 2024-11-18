@@ -12,6 +12,8 @@ import km.Projekt.entity.observer.LoggerObserver;
 import km.Projekt.entity.observer.Notifier;
 import km.Projekt.entity.statistics.SessionStatistics;
 import km.Projekt.exception.InvalidIDException;
+import km.Projekt.functional.EditNoteFunctional;
+import km.Projekt.functional.NoteMementoFunctional;
 import km.Projekt.interfaces.AbstractNoteDeleting;
 import km.Projekt.interfaces.AbstractRestoreNote;
 import km.Projekt.interfaces.DeletingNoteNotification;
@@ -51,8 +53,8 @@ public class NoteController {
     }
 
     // L3 - NOTECONTROLLER - DELETE NOTE NOTIFICAITON
-    private AbstractNoteDeleting abstractNoteDeleting;
-    private AbstractRestoreNote abstractRestoreNote;
+    private final AbstractNoteDeleting abstractNoteDeleting;
+    private final AbstractRestoreNote abstractRestoreNote;
     public NoteController() {
         this.abstractNoteDeleting = new DeletingNoteNotification();
         this.abstractRestoreNote = new RestoringNoteNotification();
@@ -173,7 +175,8 @@ public class NoteController {
 
     @GetMapping("/editnote/{id}")
     public String editNote(@PathVariable Integer id, Model model) {
-        Optional<Note> noteToBeFound = Optional.ofNullable(noteDao.findById(id).orElseThrow(() -> new InvalidIDException("Invalid note ID: " + id)));
+//        Optional<Note> noteToBeFound = Optional.ofNullable(noteDao.findById(id).orElseThrow(() -> new InvalidIDException("Invalid note ID: " + id)));
+        Optional<Note> noteToBeFound = noteDao.findById(id);
         if (!noteToBeFound.isPresent()) { return "notes"; }
         Note foundNote = noteToBeFound.get();
 
@@ -194,6 +197,26 @@ public class NoteController {
         note.setUser(userDao.findByLogin(principalName));
         note.setId(id);
         noteDao.save(note);
+
+
+        EditNoteFunctional editNoteFunctional = (original, edited) -> {
+            if (edited.getText() == null || edited.getText().isEmpty()) {
+                return false;
+            }
+            return !original.getText().equals(edited.getText());
+        };
+
+        NoteMemento previousState = noteCaretaker.restoreMemento();
+        Note temporaryNote = noteDao.findById(Math.toIntExact(id)).orElseThrow(() -> new InvalidIDException("Invalid ID"));
+        temporaryNote.restoreFromMemento(previousState);
+        noteDao.save(temporaryNote);
+
+        boolean isNoteValid = editNoteFunctional.editNoteSuccessful(temporaryNote, note);
+        if (isNoteValid) {
+            System.out.println("Edycja zakończona sukcesem: " + temporaryNote.getText() + " -> " + note.getText() + "." );
+        } else {
+            System.out.println("Błąd edycji notatki.");
+        }
 
         return "redirect:/notes";
     }
@@ -226,6 +249,9 @@ public class NoteController {
 
             restoreNoteAction(id, previousState);
         }
+
+        NoteMementoFunctional noteMementoFunctional = mementoValue -> "Przywrócono treść notatki: " + mementoValue.getText();
+        System.out.println(noteMementoFunctional.restoreNotification(note));
 
         return note.getText();
     }

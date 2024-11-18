@@ -15,11 +15,30 @@ public class NoteMediator implements Mediator {
 
     @Override
     public void notify(Object sender, String event) {
+        if (event == null) {
+            if (logger != null) {
+                logger.update(null);
+            }
+            if (notifier != null) {
+                notifier.update(null);
+            }
+            return;
+        }
+
         if (sender instanceof Note && "publicNoteCreated".equals(event)) {
             String message = ((Note) sender).getText();
+            System.out.println("Notify method invoked with event: " + event);
 
-            logger.update("Logger: nowa notatka " + message);
-            notifier.update("Notifier: powiadomienie - nowa notatka " + message);
+            if (logger != null) {
+                logger.update("Logger: nowa notatka " + message);
+            }
+
+            if (notifier != null) {
+                System.out.println("Notify method invoked with event: " + event);
+                notifier.update("Notifier: powiadomienie - nowa notatka " + message);
+            }
+        } else {
+            System.out.println("Warunki nie zostały spełnione.");
         }
     }
 
