@@ -23,6 +23,8 @@ import km.Projekt.logging.MessageLogger;
 import km.Projekt.logging.ShowMessage;
 import km.Projekt.notesView.NoteStyle;
 import km.Projekt.notesView.NoteStyleFactory;
+import km.Projekt.tags.NoteTagManager;
+import km.Projekt.tags.TagSystemManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -152,6 +154,32 @@ public class NoteController {
         }
     }
 
+    public void addSystemManager() {
+        TagSystemManager tagSystemManager = new TagSystemManager();
+        NoteTagManager noteTagManager = new NoteTagManager(tagSystemManager);
+
+        // Zarządzanie tagami systemowymi
+        tagSystemManager.addTag("Important");
+        tagSystemManager.addTag("Urgent");
+
+        // Przypisywanie tagów do notatek
+        noteTagManager.assignTagToNote("note1", "Important");
+        noteTagManager.assignTagToNote("note1", "Urgent");
+        noteTagManager.assignTagToNote("note2", "Important");
+
+        // Wyświetlanie tagów przypisanych do notatki
+        System.out.println("Tagi dla note1: " + noteTagManager.getTagsForNote("note1"));
+        // Usuwanie tagów
+        noteTagManager.removeTagFromNote("note1", "Urgent");
+        System.out.println("Tagi dla note1 po usunięciu: " + noteTagManager.getTagsForNote("note1"));
+
+        int tagCount = noteTagManager.countTags("note1");
+        System.out.println("Note 'note1' has " + tagCount + " tags.");
+
+        // Wyszukiwanie notatek po tagu
+        System.out.println("Notatki z tagiem 'Important': " + noteTagManager.findNotesByTag("Important"));
+    }
+
     @PostMapping("/addnote")
     public String addNotePOST(@ModelAttribute @Valid Note note, BindingResult bindingResult, Principal principal){
         sessionStatistics.incrementNumberOfAddedNotes();
@@ -165,6 +193,9 @@ public class NoteController {
         //L2 - MEDIATOR - zmiana nie tworzymy loggera i notifiera, tylko tworzymy dla nich mediatora
             setupPublicNoteObservers(note);
         }
+
+        addSystemManager();
+
         noteDao.save(note);
         saveAndLogNoteDetails(note, principal);
         createAndDisplayNoteStyles();
